@@ -810,13 +810,13 @@ namespace m3d
 
         "movaps 0x00(%%rdi), %%xmm0;"
         "movaps 0x10(%%rdi), %%xmm1;"
-        "movaps 0x00(%%rdi), %%xmm2;"
-        "movaps 0x10(%%rdi), %%xmm3;"
+        "movaps 0x20(%%rdi), %%xmm2;"
+        "movaps 0x30(%%rdi), %%xmm3;"
 
         "movaps 0x00(%%rsi), %%xmm4;"
         "movaps 0x10(%%rsi), %%xmm5;"
-        "movaps 0x00(%%rsi), %%xmm6;"
-        "movaps 0x10(%%rsi), %%xmm7;"
+        "movaps 0x20(%%rsi), %%xmm6;"
+        "movaps 0x30(%%rsi), %%xmm7;"
 
         "addps %%xmm4, %%xmm0;"
         "addps %%xmm5, %%xmm1;"
@@ -845,13 +845,13 @@ namespace m3d
 
         "movaps 0x00(%%rdi), %%xmm0;"
         "movaps 0x10(%%rdi), %%xmm1;"
-        "movaps 0x00(%%rdi), %%xmm2;"
-        "movaps 0x10(%%rdi), %%xmm3;"
+        "movaps 0x20(%%rdi), %%xmm2;"
+        "movaps 0x30(%%rdi), %%xmm3;"
 
         "movaps 0x00(%%rsi), %%xmm4;"
         "movaps 0x10(%%rsi), %%xmm5;"
-        "movaps 0x00(%%rsi), %%xmm6;"
-        "movaps 0x10(%%rsi), %%xmm7;"
+        "movaps 0x20(%%rsi), %%xmm6;"
+        "movaps 0x30(%%rsi), %%xmm7;"
 
         "subps %%xmm4, %%xmm0;"
         "subps %%xmm5, %%xmm1;"
@@ -894,7 +894,7 @@ namespace m3d
         "movaps %%xmm0, 0x00(%%rdi);"
         "movaps %%xmm1, 0x10(%%rdi);"
         "movaps %%xmm2, 0x20(%%rdi);"
-        "movaps %%xmm2, 0x30(%%rdi);"
+        "movaps %%xmm3, 0x30(%%rdi);"
 
         : :"m"(mout), "m"(fin) : "%rdi", "%rsi"
       );
@@ -927,7 +927,7 @@ namespace m3d
         "movaps %%xmm0, 0x00(%%rdi);"
         "movaps %%xmm1, 0x10(%%rdi);"
         "movaps %%xmm2, 0x20(%%rdi);"
-        "movaps %%xmm2, 0x30(%%rdi);"
+        "movaps %%xmm3, 0x30(%%rdi);"
 
         : :"m"(mout), "m"(fin) : "%rdi", "%rsi"
       );
