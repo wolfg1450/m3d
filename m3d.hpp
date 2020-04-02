@@ -371,6 +371,7 @@ namespace m3d
 
     matrix2& operator+=(matrix2 const &ot){
 
+      float* mout = &data[0][0];
       const matrix2* min = &ot;
 
       __asm__ __volatile__(
@@ -379,11 +380,12 @@ namespace m3d
 
         "movaps (%%rdi), %%xmm0;"
         "movaps (%%rsi), %%xmm1;"
+
         "addps %%xmm1, %%xmm0;"
 
         "movaps %%xmm0, (%%rdi)"
 
-        : :"m"(this), "m"(min) :
+        : :"m"(mout), "m"(min) : "%rdi", "%rsi"
       );
 
       return *this;
@@ -391,6 +393,7 @@ namespace m3d
 
     matrix2& operator-=(matrix2 const &ot){
 
+      float* mout = &data[0][0];
       const matrix2* min = &ot;
 
       __asm__ __volatile__(
@@ -399,11 +402,12 @@ namespace m3d
 
         "movaps (%%rdi), %%xmm0;"
         "movaps (%%rsi), %%xmm1;"
+
         "subps %%xmm1, %%xmm0;"
 
-        "movaps %%xmm0, (%%rdi);"
+        "movaps %%xmm0, (%%rdi)"
 
-        : :"m"(this), "m"(min) :
+        : :"m"(mout), "m"(min) : "%rdi", "%rsi"
       );
 
       return *this;
@@ -411,6 +415,7 @@ namespace m3d
 
     matrix2& operator*=(float f){
 
+      float* mout = &data[0][0];
       float* fin = &f;
 
       __asm__ __volatile__(
@@ -420,18 +425,19 @@ namespace m3d
         "movaps (%%rdi), %%xmm0;"
         "movss (%%rsi), %%xmm1;"
         "shufps $0x00, %%xmm1, %%xmm1;"
+
         "mulps %%xmm1, %%xmm0;"
 
         "movaps %%xmm0, (%%rdi);"
 
-        : :"m"(this), "m"(fin) :
+        : :"m"(mout), "m"(fin) : "%rdi", "%rsi"
       );
-
       return *this;
     }
 
     matrix2& operator/=(float f){
 
+      float* mout = &data[0][0];
       float* fin = &f;
 
       __asm__ __volatile__(
@@ -441,11 +447,12 @@ namespace m3d
         "movaps (%%rdi), %%xmm0;"
         "movss (%%rsi), %%xmm1;"
         "shufps $0x00, %%xmm1, %%xmm1;"
+
         "divps %%xmm1, %%xmm0;"
 
         "movaps %%xmm0, (%%rdi);"
 
-        : :"m"(this), "m"(fin) :
+        : :"m"(mout), "m"(fin) : "%rdi", "%rsi"
       );
 
       return *this;
@@ -454,14 +461,14 @@ namespace m3d
     float data[2][2] __attribute__ ((aligned(16)));
   };
 
-  matrix2 operator+(matrix2 const &one, matrix const &two){
+  matrix2 operator+(matrix2 const &one, matrix2 const &two){
     matrix2 mout(one);
     mout+=two;
 
     return mout;
   }
 
-  matrix2 operator-(matrix2 const &one, matrix const &two){
+  matrix2 operator-(matrix2 const &one, matrix2 const &two){
     matrix2 mout(one);
     mout-=two;
 
@@ -501,8 +508,8 @@ namespace m3d
     vector2 vout;
 
     vector2* vo = &vout;
-    matrix2* min = &mat;
-    vector2* vin = &vi;
+    const matrix2* min = &mat;
+    const vector2* vin = &vi;
 
     __asm__ __volatile__(
 
@@ -510,19 +517,20 @@ namespace m3d
       "mov %1, %%rsi;"
       "mov %2, %%rdx;"
 
-      "movaps (%%rdi), %%xmm0;"
+      "movaps (%%rsi), %%xmm0;"
       "movss (%%rdx), %%xmm1;"
-      "movss 8(%%rdx) %%xmm2;"
+      "movss 4(%%rdx), %%xmm2;"
 
       "shufps $0x00, %%xmm1, %%xmm2;"
+      "shufps $0xD8, %%xmm0, %%xmm0;"
 
       "mulps %%xmm2, %%xmm0;"
 
       "movhlps %%xmm0, %%xmm1;"
 
-      "addps %%xmm1, %%xmm0;"
+      "addps %%xmm0, %%xmm1;"
 
-      "movlps %%xmm0, (%%rdi);"
+      "movlps %%xmm1, (%%rdi);"
 
       : : "m"(vo), "m"(min), "m"(vin):
     );
@@ -533,10 +541,10 @@ namespace m3d
   matrix2& transpose(matrix2& mat)
   {
     matrix2 mout(mat);
-    mout[1][0] = mat[0][1];
-    mout[0][1] = mat[1][0];
+    mat[1][0] = mout[0][1];
+    mat[0][1] = mout[1][0];
 
-    return mout;
+    return mat;
   }
 
   float determinant(matrix2 const &ot)
@@ -601,42 +609,42 @@ namespace m3d
 
   matrix3 operator+(matrix3 const &one, matrix3 const &two){
     matrix3 mout(one);
-    mout+=two;
+    //mout+=two;
 
     return mout;
   }
 
   matrix3 operator-(matrix3 const &one, matrix3 const &two){
     matrix3 mout(one);
-    mout-=two;
+    //mout-=two;
 
     return mout;
   }
 
   matrix3 operator*(matrix3 const &one, float f){
     matrix3 mout(one);
-    mout*=f;
+    //mout*=f;
 
     return mout;
   }
 
   matrix3 operator*(float f, matrix3 const &two){
     matrix3 mout(two);
-    mout*=f;
+    //mout*=f;
 
     return mout;
   }
 
   matrix3 operator/(matrix3 const &one, float f){
     matrix3 mout(one);
-    mout/=f;
+    //mout/=f;
 
     return mout;
   }
 
   matrix3 operator/(float f, matrix3 const &two){
     matrix3 mout(two);
-    mout/=f;
+    //mout/=f;
 
     return mout;
   }
@@ -702,11 +710,11 @@ namespace m3d
     for(int i = 0 ; i != 3; ++i){
       for(int j = 0; j != 3; ++j){
         if(i != j){
-          mout[j][i] = mout[i][j];
+          mat[j][i] = mout[i][j];
         }
       }
     }
-    return mout;
+    return mat;
   }
 
   float determinant(matrix3 const &ot)
@@ -793,6 +801,7 @@ namespace m3d
 
     matrix4& operator+=(matrix4 const &ot){
 
+      float* mout = &data[0][0];
       const matrix4* min = &ot;
 
       __asm__ __volatile__(
@@ -801,16 +810,25 @@ namespace m3d
 
         "movaps 0x00(%%rdi), %%xmm0;"
         "movaps 0x10(%%rdi), %%xmm1;"
-        "movaps 0x00(%%rsi), %%xmm2;"
-        "movaps 0x10(%%rsi), %%xmm3;"
+        "movaps 0x00(%%rdi), %%xmm2;"
+        "movaps 0x10(%%rdi), %%xmm3;"
 
-        "addps %%xmm2, %%xmm0;"
-        "addps %%xmm3, %%xmm1"
+        "movaps 0x00(%%rsi), %%xmm4;"
+        "movaps 0x10(%%rsi), %%xmm5;"
+        "movaps 0x00(%%rsi), %%xmm6;"
+        "movaps 0x10(%%rsi), %%xmm7;"
+
+        "addps %%xmm4, %%xmm0;"
+        "addps %%xmm5, %%xmm1;"
+        "addps %%xmm6, %%xmm2;"
+        "addps %%xmm7, %%xmm3;"
 
         "movaps %%xmm0, 0x00(%%rdi);"
         "movaps %%xmm1, 0x10(%%rdi);"
+        "movaps %%xmm2, 0x20(%%rdi);"
+        "movaps %%xmm3, 0x30(%%rdi);"
 
-        : :"m"(this), "m"(min) :
+        : :"m"(mout), "m"(min) : "%rdi", "%rsi"
       );
 
       return *this;
@@ -818,6 +836,7 @@ namespace m3d
 
     matrix4& operator-=(matrix4 const &ot){
 
+      float* mout = &data[0][0];
       const matrix4* min = &ot;
 
       __asm__ __volatile__(
@@ -826,16 +845,25 @@ namespace m3d
 
         "movaps 0x00(%%rdi), %%xmm0;"
         "movaps 0x10(%%rdi), %%xmm1;"
-        "movaps 0x00(%%rsi), %%xmm2;"
-        "movaps 0x10(%%rsi), %%xmm3;"
+        "movaps 0x00(%%rdi), %%xmm2;"
+        "movaps 0x10(%%rdi), %%xmm3;"
 
-        "subps %%xmm2, %%xmm0;"
-        "subps %%xmm3, %%xmm1"
+        "movaps 0x00(%%rsi), %%xmm4;"
+        "movaps 0x10(%%rsi), %%xmm5;"
+        "movaps 0x00(%%rsi), %%xmm6;"
+        "movaps 0x10(%%rsi), %%xmm7;"
+
+        "subps %%xmm4, %%xmm0;"
+        "subps %%xmm5, %%xmm1;"
+        "subps %%xmm6, %%xmm2;"
+        "subps %%xmm7, %%xmm3;"
 
         "movaps %%xmm0, 0x00(%%rdi);"
         "movaps %%xmm1, 0x10(%%rdi);"
+        "movaps %%xmm2, 0x20(%%rdi);"
+        "movaps %%xmm3, 0x30(%%rdi);"
 
-        : :"m"(this), "m"(min) :
+        : :"m"(mout), "m"(min) : "%rdi", "%rsi"
       );
 
       return *this;
@@ -843,6 +871,7 @@ namespace m3d
 
     matrix4& operator*=(float f){
 
+      float* mout = &data[0][0];
       float* fin = &f;
 
       __asm__ __volatile__(
@@ -851,16 +880,23 @@ namespace m3d
 
         "movaps 0x00(%%rdi), %%xmm0;"
         "movaps 0x10(%%rdi), %%xmm1;"
-        "movaps 0x00(%%rsi), %%xmm2;"
-        "movaps 0x10(%%rsi), %%xmm3;"
+        "movaps 0x20(%%rdi), %%xmm2;"
+        "movaps 0x30(%%rdi), %%xmm3;"
 
-        "mulps %%xmm2, %%xmm0;"
-        "mulps %%xmm3, %%xmm1"
+        "movss 0x00(%%rsi), %%xmm4;"
+        "shufps $0x00, %%xmm4, %%xmm4;"
+
+        "mulps %%xmm4, %%xmm0;"
+        "mulps %%xmm4, %%xmm1;"
+        "mulps %%xmm4, %%xmm2;"
+        "mulps %%xmm4, %%xmm3;"
 
         "movaps %%xmm0, 0x00(%%rdi);"
         "movaps %%xmm1, 0x10(%%rdi);"
+        "movaps %%xmm2, 0x20(%%rdi);"
+        "movaps %%xmm2, 0x30(%%rdi);"
 
-        : :"m"(this), "m"(fin) :
+        : :"m"(mout), "m"(fin) : "%rdi", "%rsi"
       );
 
       return *this;
@@ -868,6 +904,7 @@ namespace m3d
 
     matrix4& operator/=(float f){
 
+      float* mout = &data[0][0];
       float* fin = &f;
 
       __asm__ __volatile__(
@@ -876,16 +913,23 @@ namespace m3d
 
         "movaps 0x00(%%rdi), %%xmm0;"
         "movaps 0x10(%%rdi), %%xmm1;"
-        "movaps 0x00(%%rsi), %%xmm2;"
-        "movaps 0x10(%%rsi), %%xmm3;"
+        "movaps 0x20(%%rdi), %%xmm2;"
+        "movaps 0x30(%%rdi), %%xmm3;"
 
-        "divps %%xmm2, %%xmm0;"
-        "divps %%xmm3, %%xmm1"
+        "movss 0x00(%%rsi), %%xmm4;"
+        "shufps $0x00, %%xmm4, %%xmm4;"
+
+        "divps %%xmm4, %%xmm0;"
+        "divps %%xmm4, %%xmm1;"
+        "divps %%xmm4, %%xmm2;"
+        "divps %%xmm4, %%xmm3;"
 
         "movaps %%xmm0, 0x00(%%rdi);"
         "movaps %%xmm1, 0x10(%%rdi);"
+        "movaps %%xmm2, 0x20(%%rdi);"
+        "movaps %%xmm2, 0x30(%%rdi);"
 
-        : :"m"(this), "m"(fin) :
+        : :"m"(mout), "m"(fin) : "%rdi", "%rsi"
       );
 
       return *this;
